@@ -26,7 +26,14 @@ async function run() {
 
     const coffeeCollection = client.db("coffeeDB").collection("coffee");
 
-    // receiving data from client side
+    // step-2: getting data from mongodb and putting them all to coffee route
+    app.get("/coffee", async (req, res) => {
+        const cursor = coffeeCollection.find();
+        const result = await cursor.toArray();
+        res.send(result);
+    });
+
+    // step-1: receiving data from client side & pushing to mongodb
     app.post("/coffee", async (req, res) => {
         const newCoffee = req.body;
         const result = await coffeeCollection.insertOne(newCoffee);
