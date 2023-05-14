@@ -33,6 +33,14 @@ async function run() {
         res.send(result);
     });
 
+    // step-4: loading single coffee data from mongodb by using single id
+    app.get("/coffee/:id", async (req, res) => {
+        const id = req.params.id;
+        const query = {_id: new ObjectId(id)};
+        const result = await coffeeCollection.findOne(query);
+        res.send(result);
+    });
+
     // step-1: receiving data from client side & pushing to mongodb
     app.post("/coffee", async (req, res) => {
         const newCoffee = req.body;
@@ -40,7 +48,28 @@ async function run() {
         res.send(result);
     });
 
-    // step-3: getting id from client side and deleting it from mongodb
+    // step-5: 
+    app.put("/coffee/:id", async (req, res) => {
+        const id = req.params.id;
+        const filter = {_id: new ObjectId(id)};
+        const options = { upsert: true };
+        const updatedCoffee = req.body;
+        const coffee = {
+            $set: {
+                name: updatedCoffee.name,
+                quantity: updatedCoffee.quantity,
+                supplier: updatedCoffee.supplier,
+                taste: updatedCoffee.taste,
+                category: updatedCoffee.category,
+                details: updatedCoffee.details,
+                photo: updatedCoffee.photo
+            }
+        }
+        const result = await coffeeCollection.updateOne(filter, coffee, options);
+        res.send(result);
+    });
+
+    // step-3: getting id from client side and deleting it from mongodb if id matched
     app.delete("/coffee/:id", async (req, res) => {
         const id = req.params.id;
         const query = {_id: new ObjectId(id) };
